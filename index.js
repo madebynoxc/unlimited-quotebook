@@ -1,6 +1,4 @@
-var fs = require('fs');
+var prompt = require('prompt');
+var animIns = require("./modules/insert.js");
 
-function addNew(path, name) {
-    var parser = require("ass-parser");
-
-}
+animIns.addNew("./subs/", "test");
