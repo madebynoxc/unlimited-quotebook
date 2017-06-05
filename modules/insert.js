@@ -5,25 +5,30 @@ module.exports = {
 
         var fs = require('fs');
         fs.readdir(path, function(err, items) {
-            var ep = [];
+            var eps = [];
             for (var i=0; i<items.length; i++) {
                 var data = fs.readFileSync(path + items[i]);
                 var cont = parser(data);
                 var phrases = module.exports.getPhrases(cont);
-                ep[i] = phrases;
+                var ep = {};
+                ep.phrases = phrases;
+                ep.anim = name;
+                ep.sub = subRequire;
+                ep.num = i + 1;
+                eps.push(ep);
             }
             console.log("Retrieved " + ep.length + " episodes");
 
-            var anim = {
-                name : name,
-                subRequire : subRequire,
-                episodes : ep
-            };
+            // var anim = {
+            //     name : name,
+            //     subRequire : subRequire,
+            //     episodes : ep
+            // };
 
-            if(ep.length == 0){
+            if(eps.length == 0){
                 console.log("[ERR!]: Found 0 episodes");
                 
-            } else module.exports.pushToDB(anim);
+            } else module.exports.pushToDB(eps);
         });
     },
 
@@ -45,7 +50,7 @@ module.exports = {
         return ret;
     },
 
-    pushToDB : function(animation) {
+    pushToDB : function(episodes) {
         var MongoClient = require('mongodb').MongoClient
         , assert = require('assert');
 
@@ -56,9 +61,9 @@ module.exports = {
             assert.equal(null, err);
             console.log("Connected correctly to server");
 
-            var collection = db.collection('animations');
-            collection.insert(animation, (err, res) => {
-                console.log("Inserted " + animation.name + " to DB");
+            var collection = db.collection('episodes');
+            collection.insert(episodes, (err, res) => {
+                console.log("Inserted " + episodes[0].anim + " to DB");
                 db.close();
             });
         });
