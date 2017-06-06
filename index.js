@@ -13,7 +13,7 @@ MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     console.log("Connected correctly to server");
 
-    var test = ["have", "some", "juice"];
+    var test = ["rum", "raisin?"];
     var collection = db.collection('episodes');
     collection.find({
         "phrases.Text" : {$regex : getRegexString(test), $options : 'i'}
