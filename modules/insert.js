@@ -19,12 +19,6 @@ module.exports = {
             }
             console.log("Retrieved " + ep.length + " episodes");
 
-            // var anim = {
-            //     name : name,
-            //     subRequire : subRequire,
-            //     episodes : ep
-            // };
-
             if(eps.length == 0){
                 console.log("[ERR!]: Found 0 episodes");
                 
