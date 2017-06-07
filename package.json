@@ -1,12 +1,15 @@
 {
   "name": "unlimited_quotebook",
   "version": "1.0.0",
-  "description": "Anime quotes creator",
+  "description": "Anime/Movie/TV quotes generator",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "NoxCaos",
+  "repository": {
+    "url": "https://github.com/NoxCaos/unlimited-quotebook.git"
+  },
   "license": "MIT",
   "dependencies": {
     "ass-parser": "^0.1.1",

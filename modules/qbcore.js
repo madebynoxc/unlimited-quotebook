@@ -1,8 +1,16 @@
-//var prompt = require('prompt');
-//animIns.addNew("./subs/", "test");
-var animIns = require("./modules/insert.js");
+module.exports = {
+
+}
+
 var _ = require("lodash");
 var ffmpeg = require("fluent-ffmpeg");
+var connection;
+
+function disconnect() {
+
+}
+
+
 
 var MongoClient = require('mongodb').MongoClient
     , assert = require('assert');
@@ -152,4 +160,3 @@ function writeTwoLines(text1, text2, image, callback) {
 function getTextXMargin(text) {
     return 300 - ((text.length * 18) / 2);
 }
-
