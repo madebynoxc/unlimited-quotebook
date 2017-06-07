@@ -3,12 +3,13 @@ module.exports = {
         mongodb.close();
     },
 
-    connect: function() {
+    connect: function(callback) {
         MongoClient.connect(url, function(err, db) {
             assert.equal(null, err);
             mongodb = db;
             isConnected = true;
-            console.log("Core: Connected correctly to database");         
+            console.log("Core: Connected correctly to database");   
+            if(callback) callback();      
         });
     },
     

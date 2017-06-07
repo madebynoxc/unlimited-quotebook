@@ -4,6 +4,10 @@ const Discord = require("discord.js");
 const extend = require('util')._extend;
 var bot, core;
 
+module.exports = {
+    _init: function(c) { _init(c); }
+}
+
 defaultArgs = {
     source: 'any',
     type: 'img',
@@ -14,33 +18,33 @@ defaultArgs = {
 function _init(c) {
     core = c;
     bot = new Discord.Client();
-}
 
-bot.on("ready", () => {
-	console.log("[DiscordJS]: Connected!");
-	bot.user.setGame("qb> .help");
-	console.log("[DiscordJS]: Ready!");
-});
-
-bot.on("disconnected", () => {
-    if(core)
-        core.disconnect();
-	console.log("[DiscordJS]: Disconnected!");
-});
-
-bot.on("message", (message) => {
-    if(message.author.bot) 
-        return false;
-    
-    log(message);
-    getCommand(message.content, (res, obj) => {
-        if(res && obj){
-            message.channel.sendMessage(res, obj);
-        } else if(res) {
-            message.channel.sendMessage(res);
-        }
+    bot.on("ready", () => {
+        console.log("[DiscordJS]: Connected!");
+        bot.user.setGame("qb> .help");
+        console.log("[DiscordJS]: Ready!");
     });
-});
+
+    bot.on("disconnected", () => {
+        if(core)
+            core.disconnect();
+        console.log("[DiscordJS]: Disconnected!");
+    });
+
+    bot.on("message", (message) => {
+        if(message.author.bot) 
+            return false;
+        
+        log(message);
+        getCommand(message.content, (res, obj) => {
+            if(res && obj){
+                message.channel.sendMessage(res, obj);
+            } else if(res) {
+                message.channel.sendMessage(res);
+            }
+        });
+    });
+}
 
 function log(message) {
     var response = '';

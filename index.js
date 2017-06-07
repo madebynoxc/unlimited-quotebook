@@ -8,5 +8,4 @@ var bot = require('./modules/bot.js');
 
 console.log('Starting Server...');
 
-core.connect();
-bot._init(core);
+core.connect(() => { bot._init(core); });
