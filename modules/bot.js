@@ -23,6 +23,8 @@ bot.on("ready", () => {
 });
 
 bot.on("disconnected", () => {
+    if(core)
+        core.disconnect();
 	console.log("[DiscordJS]: Disconnected!");
 });
 

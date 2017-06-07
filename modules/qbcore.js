@@ -21,7 +21,7 @@ var _ = require("lodash");
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
-var media = require('media.js');
+var media = require('./media.js');
 
 var url = 'mongodb://localhost:27017/quotebook';
 var mongodb;
