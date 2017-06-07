@@ -1,17 +1,19 @@
-//https://discordapp.com/oauth2/authorize?&client_id=321522356172619777&scope=bot&permissions=66186303
 
-process.title = "unlimited_quotebook";
-console.log("[DiscordJS]: Startng...");
-
+const invite = 'https://discordapp.com/oauth2/authorize?&client_id=321522356172619777&scope=bot&permissions=66186303';
 const Discord = require("discord.js");
 const extend = require('util')._extend;
-const bot = new Discord.Client();
+var bot, core;
 
 defaultArgs = {
     source: 'any',
     type: 'img',
     safe: false,
     id: false
+}
+
+function _init(c) {
+    core = c;
+    bot = new Discord.Client();
 }
 
 bot.on("ready", () => {
@@ -28,38 +30,46 @@ bot.on("message", (message) => {
     if(message.author.bot) 
         return false;
     
-    var response = getBasicResponse(message);
-    var res = getCommand(message.content);
-    if(res) {
-
-    }
+    log(message);
+    getCommand(message.content, (res, obj) => {
+        if(res && obj){
+            message.channel.sendMessage(res, obj);
+        } else if(res) {
+            message.channel.sendMessage(res);
+        }
+    });
 });
 
-function getBasicResponse(message) {
+function log(message) {
     var response = '';
     try {
 		response = message.guild.name + " : " + message.channel.name + " : " + message.author.username + " : " + message.content;
 	} catch(e) {
 		response = "PW : " + message.author.username + " : " + message.content;
 	}
-    return response;
+    console.log(response);
 }
 
-function getCommand(m) {
+function getCommand(m, callback) {
     if(m.startsWith('qb> ')) {
         var sb = m.substring(4);
         switch(sb) {
             case '.help': 
-                return showHelp();
+                callback(showHelp());
+                break;
             case '.up': 
-                return voteResult(true);
-            case '.donw': 
-                return voteResult(false);
+                callback(voteResult(true));
+                break;
+            case '.down': 
+                callback(voteResult(false));
+                break;
             default:
-                return processRequest(sb);
+                processRequest(sb, (res) => {
+                    callback(res);
+                });
         }
     }
-    return undefined;
+    callback(undefined);
 }
 
 function showHelp() {
@@ -87,20 +97,27 @@ function showHelp() {
 }
 
 function voteResult(id) {
-
+    return "[Bot:ERROR] Voting will be impemented soon!";
 }
 
-function processRequest(command) {
-    var regex = new RegExp('/ -[^ ;]+/g');
+function processRequest(command, callback) {
+    var regex = new RegExp(' -[^ ;]+', 'g');
     var args = regex.exec(command);
     if(args.length > 0) 
         setArgs(args);
 
     var keywords = command.split(' -')[0].split(' ');
     if(keywords.length < 0)
-        return 'Sorry, seems like you did not specify any keywords D:';
+        callback('[Bot:ERROR] Sorry, seems like you did not specify any keywords D:');
     
-    
+    if(core)
+        core.startRequest(keywords, defaultArgs, (resp, img) => {
+            callback(resp, { img });
+        });
+    else {
+        console.log('[Bot:ERROR] Core component is not defined!');
+    }
+    callback('[Internal error]');
 }
 
 function setArgs(args) {
