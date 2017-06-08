@@ -1,15 +1,23 @@
 module.exports = {
 
-    addNew : function(path, name, subRequire = true) {
+    addNew : function(name, path, subRequire = true) {
         var parser = require("ass-parser");
 
         var fs = require('fs');
-        fs.readdir(path, function(err, items) {
+        fs.readdir('./subs/', function(err, items) {
             var eps = [];
+            if(!items){
+                if(err)
+                    console.log(err);
+                else
+                    console.log('[ERROR] No suitable items in ' + path);
+                return;
+            }
+
             for (var i=0; i<items.length; i++) {
                 var data = fs.readFileSync(path + items[i]);
                 var cont = parser(data);
-                var phrases = module.exports.getPhrases(cont);
+                var phrases = getPhrases(cont);
                 var ep = {};
                 ep.phrases = phrases;
                 ep.anim = name;
@@ -17,16 +25,21 @@ module.exports = {
                 ep.num = i + 1;
                 eps.push(ep);
             }
-            console.log("Retrieved " + ep.length + " episodes");
+            console.log("Retrieved " + eps.length + " episodes");
 
             if(eps.length == 0){
                 console.log("[ERR!]: Found 0 episodes");
                 
-            } else module.exports.pushToDB(eps);
+            } else pushToDB(eps);
         });
     },
 
-    getPhrases : function(data) {
+    
+}
+
+const url = 'mongodb://localhost:27017/quotebook';
+
+function getPhrases(data) {
         var lodash = require('lodash');
         var ret = [];
         for (var j=0; j<data.length; j++) {
@@ -42,24 +55,16 @@ module.exports = {
             }
         }
         return ret;
-    },
-
-    pushToDB : function(episodes) {
-        var MongoClient = require('mongodb').MongoClient
-        , assert = require('assert');
-
-        // Connection URL
-        var url = 'mongodb://localhost:27017/quotebook';
-        // Use connect method to connect to the Server
-        MongoClient.connect(url, function(err, db) {
-            assert.equal(null, err);
-            console.log("Connected correctly to server");
-
-            var collection = db.collection('episodes');
-            collection.insert(episodes, (err, res) => {
-                console.log("Inserted " + episodes[0].anim + " to DB");
-                db.close();
-            });
-        });
     }
+
+function pushToDB(episodes) {
+    var MongoClient = require('mongodb').MongoClient;
+    var assert = require('assert');
+    MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        var collection = db.collection('episodes');
+        collection.insert(episodes, (err, res) => {
+            console.log("Inserted " + episodes[0].anim + " to DB");
+        });
+    });
 }

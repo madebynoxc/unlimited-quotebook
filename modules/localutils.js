@@ -1,7 +1,7 @@
 module.exports = {
-    getRegexString: function(err) { getRegexString(err); },
-    parseToSeconds: function(i) { parseToSeconds(i); },
-    msToTime: function(s) { msToTime(s); },
+    getRegexString,
+    parseToSeconds,
+    msToTime
 }
 
 function getRegexString(arr) {
