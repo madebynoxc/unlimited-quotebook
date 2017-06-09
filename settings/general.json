@@ -1,0 +1,17 @@
+{
+    "clientid": "321522356172619777",
+    "token": "<your_token_here>",
+    "admins": ["135401616214982656"],
+    "database": "mongodb://localhost:27017/quotebook",
+    "subtitles": "./subs/",
+    "botcolor": "45e8a4",
+    "botperm": "125952",
+    "maxreq": 10,
+
+    "media": {
+        "episodes": "./vids/",
+        "font": "./fonts/segoe_rst.fnt",
+        "temp": "./temp/",
+        "temptimeout": 5000
+    }
+}

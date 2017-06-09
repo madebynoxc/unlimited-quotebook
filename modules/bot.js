@@ -1,19 +1,14 @@
 
 const invite = 'https://discordapp.com/oauth2/authorize?&client_id=321522356172619777&scope=bot&permissions=125952';
 const Discord = require("discord.js");
-const token = 'MzIxNTIyMzU2MTcyNjE5Nzc3.DBjOMg.iiD9cs81JcmOluFY7XBE2wy7z7M';
 const extend = require('util')._extend;
-var bot, core;
+var bot, core, queue;
+
+const settings = require('../settings/general.json');
+const defaultArgs = require('../settings/default_args.json');
 
 module.exports = {
-    _init: function(c) { _init(c); }
-}
-
-defaultArgs = {
-    source: 'any',
-    type: 'img',
-    safe: false,
-    id: false
+    _init, _stop
 }
 
 function _init(c) {
@@ -34,22 +29,26 @@ function _init(c) {
     bot.on("message", (message) => {
         if(message.author.bot, !message.content.startsWith('qb> ')) 
             return false;
-        
+        if(queue > settings.maxreq) {
+            message.channel.send("Experiencing request overflow, sorry");
+        }
+
         log(message);
-        getCommand(message, (res, obj) => {
-            if(obj){
-                message.channel.send(res, obj);
-            } else if(res) {
-                message.channel.send(res);
-            }
+        queue++;
+        message.channel.startTyping();
+        getCommand(message, (res, obj = {}) => {
+            message.channel.send(res, obj);
+            queue--;
+            message.channel.stopTyping(true);
         });
     });
 
-    bot.login(token);
+    bot.login(settings.token);
 }
 
 function _stop() {
-    //bot.st
+    console.log("Bot: Shutting down...");
+    return bot.destroy();
 }
 
 function log(message) {
@@ -64,24 +63,35 @@ function log(message) {
 
 function getCommand(m, callback) {
     if(m.content.startsWith('qb> ')) {
-        var sb = m.content.substring(4);
+        let sb = m.content.substring(4);
         switch(sb) {
             case '.help': 
                 callback(showHelp(m));
-                break;
+                return;
             case '.up': 
                 callback(voteResult(true));
-                break;
+                return;
             case '.down': 
                 callback(voteResult(false));
-                break;
+                return;
+            case '.kill': 
+                if(isAdmin(m.sender)) {
+                    callback("Shutting down now. I said with a posed look");
+                    _stop();
+                }
+                return;
             default:
                 processRequest(sb, (res, obj) => {
                     callback(res, obj);
                 });
+                return;
         }
     }
     callback(undefined);
+}
+
+function isAdmin(sender) {
+    return settings.admins.includes(sender);
 }
 
 function showHelp(message) {
@@ -89,7 +99,7 @@ function showHelp(message) {
 		author: {
 			name: "Unlimited Quotebook usage guide \n",
 		},
-		color: 0x45e8a4,
+		color: '0x' + settings.botcolor,
 		fields: [{
 			name:"qb> [keywords] [-params]",
 			value:"Request a quote (see params section)",
@@ -113,18 +123,18 @@ function voteResult(id) {
 }
 
 function processRequest(command, callback) {
-    var regex = new RegExp(' -[^ ;]+', 'g');
-    var args = regex.exec(command);
+    let regex = new RegExp(' -[^ ;]+', 'g', 'i');
+    let args = regex.exec(command);
     if(args && args.length > 0) 
         setArgs(args);
 
-    var keywords = command.split(' -')[0].split(' ');
+    let keywords = command.split(' -')[0].split(' ');
     if(keywords.length < 0)
         callback('[Bot:ERROR] Sorry, seems like you did not specify any keywords D:');
     
     if(core)
         core.startRequest(keywords, defaultArgs, (resp, img) => {
-            callback(resp, { file: img });
+            callback(resp, {color: '0x' + settings.botcolor, file: img });
         });
     else {
         console.log('[Bot:ERROR] Core component is not defined!');

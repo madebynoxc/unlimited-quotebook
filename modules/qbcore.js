@@ -1,15 +1,17 @@
 module.exports = {
     disconnect: function() {
+        isConnected = false;
         mongodb.close();
     },
 
-    connect: function(callback) {
-        MongoClient.connect(url, function(err, db) {
+    connect: function(sett, callback) {
+        settings = sett;
+        MongoClient.connect(sett.database, function(err, db) {
             assert.equal(null, err);
             mongodb = db;
             isConnected = true;
             console.log("Core: Connected correctly to database");   
-            if(callback) callback();      
+            if(callback) callback();   
         });
     },
     
@@ -23,8 +25,7 @@ var assert = require('assert');
 var media = require('./media.js');
 var utils = require('./localutils.js');
 
-const url = 'mongodb://localhost:27017/quotebook';
-var mongodb;
+var mongodb, settings;
 var isConnected = false;
 
 function startRequest(keywords, params, callback) {
@@ -41,13 +42,13 @@ function startRequest(keywords, params, callback) {
             var ph = getPhraseList(rand_ep, keywords);
             var p = _.sample(ph);
             var text = media.getFrame(p, rand_ep.num - 1, (file) => {
-                media.printText(p.Text, file, () => {
-                    callback('', './temp2.png');
+                media.printText(p.Text, file, (result) => {
+                    callback('', result);
                 });
             });
         } else {
             console.log('Core: {' + keywords + "} \n Nothing found");
-            callback("[Core:ERROR] Nothing found /._.\\");
+            callback("Nothing found ._.");
         }
     });
 }
@@ -62,6 +63,6 @@ function getPhraseList(episode, match) {
             res.push(ph[i]);
         }
     }
-    console.log('Core: Found phrases ${res.length}');
+    console.log('Core: Found phrases ' + res.length);
     return res;
 }

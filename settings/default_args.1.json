@@ -1,0 +1,9 @@
+{
+    "source": null,    //[-s] can be some movie by default. 'null' scans through all
+    "type": "img",      //[-gif, -img] static image or gif
+    "min_rating": 0,    //[-mr] the min rating. 0 will generate new
+    "return_id": false, //[-id] return the temporary ID for further actions
+    "remove_mention": false,    //[-rm <name/null>] if true will try to remove character name mentioning
+                                //will replace with user in chat, if passed in args
+    "remove_message": false     //[-rmsg] if true removes user's command
+}

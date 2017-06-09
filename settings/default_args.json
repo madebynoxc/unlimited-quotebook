@@ -1,0 +1,8 @@
+{
+    "source": null,   
+    "type": "img",      
+    "min_rating": 0,    
+    "return_id": false, 
+    "remove_mention": false,
+    "remove_message": false  
+}

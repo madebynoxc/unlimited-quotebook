@@ -4,7 +4,7 @@ module.exports = {
         var parser = require("ass-parser");
 
         var fs = require('fs');
-        fs.readdir('./subs/', function(err, items) {
+        fs.readdir(path, function(err, items) {
             var eps = [];
             if(!items){
                 if(err)
@@ -37,7 +37,7 @@ module.exports = {
     
 }
 
-const url = 'mongodb://localhost:27017/quotebook';
+const settings = require('../settings/general.json');
 
 function getPhrases(data) {
         var lodash = require('lodash');
@@ -60,7 +60,7 @@ function getPhrases(data) {
 function pushToDB(episodes) {
     var MongoClient = require('mongodb').MongoClient;
     var assert = require('assert');
-    MongoClient.connect(url, function(err, db) {
+    MongoClient.connect(settings.database, function(err, db) {
         assert.equal(null, err);
         var collection = db.collection('episodes');
         collection.insert(episodes, (err, res) => {
