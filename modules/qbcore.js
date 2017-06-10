@@ -50,7 +50,7 @@ function startRequest(keywords, params, callback) {
             let p = _.sample(ph);
             let text = media.getFrame(p, rand_ep.num - 1, (file) => {
                 
-                media.printText(modifyText(p.Text), file, (result) => {
+                media.printText(modifyText(p.Text, params), file, (result) => {
                     callback('', result);
                 });
             });
@@ -61,13 +61,15 @@ function startRequest(keywords, params, callback) {
     });
 }
 
-function modifyText(txt) {
+function modifyText(txt, params) {
     if(params.custom_text) 
         return params.custom_text;
         
     if(params.mention) {
-        let reg = new RegExp('[A-Z][a-z]*,');
-        let match = reg.exec(txt)[0];
+        let reg = (new RegExp('[A-Z][a-z]*[-,]')).exec(txt);
+        if(!reg) return txt;
+
+        let match = reg[0];
         return txt.replace(match, params.mention + match[match.length - 1]);
     }
     return txt;

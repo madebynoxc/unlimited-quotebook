@@ -6,6 +6,7 @@ var bot, core, queue;
 
 const settings = require('../settings/general.json');
 const utils = require('./localutils.js');
+const media = require('./media.js');
 const defaultArgs = require('../settings/default_args.json');
 
 module.exports = {
@@ -30,8 +31,10 @@ function _init(c) {
     bot.on("message", (message) => {
         if(message.author.bot, !message.content.startsWith('qb> ')) 
             return false;
+        console.log("Bot Queue: " + queue);
         if(queue > settings.maxreq) {
             message.channel.send("Experiencing request overflow, sorry");
+            return false;
         }
 
         log(message);
@@ -45,7 +48,9 @@ function _init(c) {
         });
     });
 
-    bot.login(settings.token);
+    bot.login(settings.token).catch((reason) => {
+        console.log(reason);
+    });
 }
 
 function _stop() {
