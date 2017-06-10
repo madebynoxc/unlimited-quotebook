@@ -1,6 +1,7 @@
 module.exports = {
     getFrame,
-    printText
+    printText,
+    clearTemp
 }
 
 const ffmpeg = require("fluent-ffmpeg");
@@ -37,7 +38,31 @@ function getFrame(phrase, ep, callback) {
 }
 
 function removeTempImage(n) {
-    setTimeout(() => {fs.unlink(media.temp + n)}, media.temptimeout);
+    if(media.temptimeout < 0) return;
+    if(media.temptimeout < 5){
+        media.temptimeout = 5;
+        console.log('[Media:WARN] The minimal temp autoclear timeout is 5sec');
+    }
+
+    setTimeout(() => {fs.unlink(media.temp + n, (err) => {
+        if(err) console.log(err);
+    })}, media.temptimeout);
+}
+
+function clearTemp(callback) {
+    fs.readdir(media.temp, (err, files) => {
+        if(err) {
+            console.log('[Media:ERROR] Clear temp: ' + err);
+        } else {
+            for (var i = 0; i < files.length; i++) {
+                fs.unlink(media.temp + files[i], (err) => {
+                    if(err) console.log(err);
+                });
+            }
+            console.log("Removed " + files.length + " items");
+            if(callback) callback(files.length);
+        }
+    });
 }
 
 function getAverageTime(time1, time2) {

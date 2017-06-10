@@ -3,6 +3,7 @@
     "type": "img",      
     "min_rating": 0,    
     "return_id": false, 
-    "remove_mention": false,
-    "remove_message": false  
+    "mention": null,
+    "remove_message": false,
+    "custom_text": null  
 }

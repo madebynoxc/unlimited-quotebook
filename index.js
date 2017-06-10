@@ -7,7 +7,7 @@ if(!settings){
     return;
 }
 
-var animIns = require("./modules/insert.js");
+var media = require('./modules/media.js');
 var core = require('./modules/qbcore.js');
 var bot = require('./modules/bot.js');
 var ins = require('./modules/insert.js');
@@ -39,6 +39,9 @@ rl.on('line', function (cmd) {
         case 'add':
             tryAddEpisodes(sp);
             break;
+        case 'clrtmp':
+            media.clearTemp();
+            break;
         case 'help':
             showHelp();
             break;
@@ -60,5 +63,6 @@ function showHelp() {
     console.log("--------HELP--------");
     console.log("startb - starts the bot");
     console.log("stopb - stops the bot");
+    console.log("clrtmp - clears temp folder");
     console.log("add <anime_name> optional: [subs_path]");
 }

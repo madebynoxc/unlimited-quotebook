@@ -5,6 +5,7 @@ const extend = require('util')._extend;
 var bot, core, queue;
 
 const settings = require('../settings/general.json');
+const utils = require('./localutils.js');
 const defaultArgs = require('../settings/default_args.json');
 
 module.exports = {
@@ -34,12 +35,13 @@ function _init(c) {
         }
 
         log(message);
-        queue++;
-        message.channel.startTyping();
-        getCommand(message, (res, obj = {}) => {
+        queue++;  
+        getCommand(message, (res, obj) => {
+            if(!res && !obj) 
+                return false;
+                
             message.channel.send(res, obj);
             queue--;
-            message.channel.stopTyping(true);
         });
     });
 
@@ -74,15 +76,24 @@ function getCommand(m, callback) {
             case '.down': 
                 callback(voteResult(false));
                 return;
+            case '.clrtmp': 
+                if(isAdmin(m.author.id)) {
+                    media.clearTemp((num) => {
+                        callback('Cleared ' + num + ' objects in temp');
+                    });
+                }
+                return;
             case '.kill': 
-                if(isAdmin(m.sender)) {
+                if(isAdmin(m.author.id)) {
                     callback("Shutting down now. I said with a posed look");
-                    _stop();
+                    setTimeout(() => { _stop(); }, 2000); 
                 }
                 return;
             default:
+                m.channel.startTyping();
                 processRequest(sb, (res, obj) => {
                     callback(res, obj);
+                    m.channel.stopTyping(true);
                 });
                 return;
         }
@@ -99,12 +110,12 @@ function showHelp(message) {
 		author: {
 			name: "Unlimited Quotebook usage guide \n",
 		},
-		color: '0x' + settings.botcolor,
+        color: utils.HEXToVBColor(settings.botcolor),
 		fields: [{
 			name:"qb> [keywords] [-params]",
 			value:"Request a quote (see params section)",
 			inline: false
-		}, {
+        }, /*{
 			name: "qb> .up",
 			value: "Upvotes last result",
 			inline: false
@@ -112,35 +123,88 @@ function showHelp(message) {
 			name: "qb> .down",
 			value: "Downvotes last result",
 			inline: false
-		}]
+		}*/
+        {
+			name:"Parameters (-param)",
+			value:
+            "-s <name> | source name, default any \n"
+            + "-men <any user> | tries to replace mention in quote with your text \n"
+            + "-ctxt <text> | replaces phrase with your custom text \n"
+            + "-rmsg | removes your message with command, default false",
+			inline: false
+        }
+        ]
     }
-    message.author.sendMessage("", { embed });
+    message.author.send("", { embed });
     return undefined;
 }
 
+function showStats(callback) {
+    let embed = {
+		author: {
+			name: "Unlimited Quotebook stats",
+		},
+        color: utils.HEXToVBColor(settings.botcolor),
+		fields: [{
+			name:"qb> [keywords] [-params]",
+			value:"Request a quote (see params section)",
+			inline: false
+        }]
+    }
+    callback("", { embed });
+}
+
 function voteResult(id) {
-    return "[Bot:ERROR] Voting will be impemented soon!";
+    return "Voting success! Now has: 0 votes";
 }
 
 function processRequest(command, callback) {
-    let regex = new RegExp(' -[^ ;]+', 'g', 'i');
-    let args = regex.exec(command);
-    if(args && args.length > 0) 
-        setArgs(args);
+    let args = setArgs(command);
+    console.log(args);
 
     let keywords = command.split(' -')[0].split(' ');
     if(keywords.length < 0)
         callback('[Bot:ERROR] Sorry, seems like you did not specify any keywords D:');
     
     if(core)
-        core.startRequest(keywords, defaultArgs, (resp, img) => {
-            callback(resp, {color: '0x' + settings.botcolor, file: img });
+        core.startRequest(keywords, args, (resp, img) => {
+            callback(resp, {file: img });
         });
     else {
         console.log('[Bot:ERROR] Core component is not defined!');
     }
 }
 
-function setArgs(args) {
-
+function setArgs(comm) {
+    let regex = new RegExp(' -[^ ;]+', 'ig');
+    let args = extend({}, defaultArgs);
+    while ((a = regex.exec(comm)) !== null) {
+        let par = comm.slice(regex.lastIndex).split(' -')[0].trim();
+        console.log('Bot:Arg: ' + a + ' = ' + par);
+        switch(a[0].trim()) {
+            case '-s':
+                args.source = par;
+                break;
+            case '-gif':
+                args.type = 'gif';
+                break;
+            case '-r':
+                let p = parseInt(par);
+                args.min_rating = p? p : args.min_rating;
+                break;
+            case '-id':
+                args.return_id = true;
+                break;
+            case '-men':
+                args.mention = par;
+                break;
+            case '-rmsg':
+                args.remove_message = true;
+                break;
+            case '-ctxt':
+                args.custom_text = par;
+                break;
+        }
+    }
+    return args;
 }

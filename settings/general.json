@@ -1,6 +1,6 @@
 {
     "clientid": "321522356172619777",
-    "token": "<your_token_here>",
+    "token": "",
     "admins": ["135401616214982656"],
     "database": "mongodb://localhost:27017/quotebook",
     "subtitles": "./subs/",
