@@ -72,7 +72,7 @@ function getAverageTime(time1, time2) {
 
 function printText(text, file, callback) {
     Jimp.read(media.temp + file, function (err, image) {
-        let words = text.split(' ');
+        let words = text.split(/ |-/g);
         let wordsInLine = Math.floor(words.length/Math.fround(text.length / 27));
         let promises = [], lines = [], ln = 0;
         lines[ln] = '';

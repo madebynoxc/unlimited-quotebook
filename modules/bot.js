@@ -81,6 +81,13 @@ function getCommand(m, callback) {
             case '.down': 
                 callback(voteResult(false));
                 return;
+            case '.list':
+                m.channel.startTyping(); 
+                showList((res, obj) => {
+                    m.channel.stopTyping(true);
+                    callback(res, obj);
+                });
+                return;
             case '.clrtmp': 
                 if(isAdmin(m.author.id)) {
                     media.clearTemp((num) => {
@@ -132,6 +139,10 @@ function showHelp(message) {
 			inline: false
 		}*/
         {
+			name: "qb> .list",
+			value: "Shows the list of hosted episodes",
+			inline: false
+		}, {
 			name:"Parameters (-param)",
 			value:
             "-s <name> | source name, default any \n"
@@ -160,6 +171,21 @@ function showStats(callback) {
         }]
     }
     callback("", { embed });
+}
+
+function showList(callback) {
+    core.getEpisodeList((anim) => {
+        console.log('Bot:Host: ' + anim);
+        let embed = {
+            color: utils.HEXToVBColor(settings.botcolor),
+            fields: [{
+                name: "Now hosting:",
+                value: anim,
+                inline: false
+            }]
+        }
+        callback("", { embed });
+    });
 }
 
 function voteResult(id) {

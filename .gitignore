@@ -2,6 +2,7 @@ node_modules/
 subs/
 work/
 vids/
+temp/
 temp.png
 temp2.png
 settings/general.json

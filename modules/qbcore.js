@@ -1,6 +1,6 @@
 module.exports = {
     connect, disconnect,  
-    startRequest
+    startRequest, getEpisodeList
 }
 
 var _ = require("lodash");
@@ -96,4 +96,17 @@ function getPhraseList(episode, match) {
     }
     console.log('Core: Found phrases ' + res.length);
     return res;
+}
+
+function getEpisodeList(callback) {
+    let anims = '';
+    let collection = mongodb.collection('episodes');
+    collection.find({ }).toArray((err, res) => { 
+        for(var i=0; i<res.length; i++){
+            if(!anims.includes(res[i].anim)) {
+                anims += res[i].anim + ', ';
+            }
+        }
+        callback(anims.slice(0, -2));
+    });
 }
