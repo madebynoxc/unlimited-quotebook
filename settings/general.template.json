@@ -1,0 +1,18 @@
+{
+    "clientid": "<bot_id>",
+    "token": "<yout_token_here>",
+    "admins": ["<user_id>"],
+    "database": "mongodb://localhost:27017/quotebook",
+    "subtitles": "./subs/",
+    "workfolder": "./work/",
+    "botcolor": "45e8a4",
+    "botperm": "125952",
+    "maxreq": 10,
+
+    "media": {
+        "episodes": "./vids/",
+        "font": "./fonts/segoe_rst.fnt",
+        "temp": "./temp/",
+        "temptimeout": 5000
+    }
+}

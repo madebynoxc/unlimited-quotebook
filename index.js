@@ -55,7 +55,9 @@ function tryAddEpisodes(args) {
         console.log('[ERROR] Correct usage: add <anime_name> optional: subs_path]');
     } else {
         console.log('Locating files...');
-        animIns.addNew(args[1], args.length > 2? args[2] : settings.subtitles);
+        let inc = args.length > 2? args[2] : undefined;
+        let fld = args.length > 3? args[3] : settings.workfolder;
+        ins.addNew(args[1], inc, fld);
     }
 }
 

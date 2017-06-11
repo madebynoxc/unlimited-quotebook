@@ -8,6 +8,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
 var media = require('./media.js');
+var fs = require('fs');
 var utils = require('./localutils.js');
 
 var mongodb, settings;
@@ -27,6 +28,10 @@ function connect(sett, callback) {
             isConnected = true;
             console.log("Core: Connected correctly to database");   
             if(callback) callback();   
+
+            if (!fs.existsSync(settings.media.temp)){
+                fs.mkdirSync(settings.media.temp);
+            }
     });
 }
 
@@ -48,10 +53,10 @@ function startRequest(keywords, params, callback) {
             let rand_ep = _.sample(res);
             let ph = getPhraseList(rand_ep, keywords);
             let p = _.sample(ph);
-            let text = media.getFrame(p, rand_ep.num - 1, (file) => {
+            let text = media.getFrame(p, rand_ep, (file) => {
                 
                 media.printText(modifyText(p.Text, params), file, (result) => {
-                    callback('', result);
+                    callback(params.message? params.message : '', result);
                 });
             });
         } else {
@@ -70,7 +75,8 @@ function modifyText(txt, params) {
         if(!reg) return txt;
 
         let match = reg[0];
-        return txt.replace(match, params.mention + match[match.length - 1]);
+        let men = params.mention.split('#')[0].replace('@', '');
+        return txt.replace(match, men + match[match.length - 1]);
     }
     return txt;
 }

@@ -5,5 +5,6 @@
     "return_id": false, 
     "mention": null,
     "remove_message": false,
-    "custom_text": null  
+    "custom_text": null,
+    "message": null
 }

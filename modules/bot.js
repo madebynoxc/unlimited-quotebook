@@ -2,7 +2,7 @@
 const invite = 'https://discordapp.com/oauth2/authorize?&client_id=321522356172619777&scope=bot&permissions=125952';
 const Discord = require("discord.js");
 const extend = require('util')._extend;
-var bot, core, queue;
+var bot, core, queue = 0;
 
 const settings = require('../settings/general.json');
 const utils = require('./localutils.js');
@@ -40,11 +40,11 @@ function _init(c) {
         log(message);
         queue++;  
         getCommand(message, (res, obj) => {
+            queue--;
             if(!res && !obj) 
                 return false;
                 
             message.channel.send(res, obj);
-            queue--;
         });
     });
 
@@ -96,7 +96,9 @@ function getCommand(m, callback) {
                 return;
             default:
                 m.channel.startTyping();
-                processRequest(sb, (res, obj) => {
+                processRequest(sb, (res, obj, r) => {
+                    if(r) m.delete();
+
                     callback(res, obj);
                     m.channel.stopTyping(true);
                 });
@@ -135,6 +137,7 @@ function showHelp(message) {
             "-s <name> | source name, default any \n"
             + "-men <any user> | tries to replace mention in quote with your text \n"
             + "-ctxt <text> | replaces phrase with your custom text \n"
+            + "-msg <text> | puts custom message to image \n"
             + "-rmsg | removes your message with command, default false",
 			inline: false
         }
@@ -172,8 +175,8 @@ function processRequest(command, callback) {
         callback('[Bot:ERROR] Sorry, seems like you did not specify any keywords D:');
     
     if(core)
-        core.startRequest(keywords, args, (resp, img) => {
-            callback(resp, {file: img });
+        core.startRequest(keywords, args, (resp, img) => { 
+            callback(resp, {file: img }, args.remove_message);
         });
     else {
         console.log('[Bot:ERROR] Core component is not defined!');
@@ -202,6 +205,9 @@ function setArgs(comm) {
                 break;
             case '-men':
                 args.mention = par;
+                break;
+            case '-msg':
+                args.message = par;
                 break;
             case '-rmsg':
                 args.remove_message = true;

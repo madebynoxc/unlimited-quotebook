@@ -13,12 +13,13 @@ const guid = require('guid');
 var fs = require('fs');
 
 function getFrame(phrase, ep, callback) {
-    fs.readdir(media.episodes, function(err, items) {
-        console.log('Media: ' + items[ep]);
+    fs.readdir(media.episodes + ep.anim, function(err, items) {
+        let index = ep.num - 1;
+        console.log('Media: ' + media.episodes + ep.anim + '/' + items[index]);
 
         try {
             let name = guid.raw() + '.png';
-            let process = ffmpeg(media.episodes + items[ep])
+            let process = ffmpeg(media.episodes + ep.anim + '/' + items[index])
                 .takeScreenshots({
                     count: 1,
                     filename: name,

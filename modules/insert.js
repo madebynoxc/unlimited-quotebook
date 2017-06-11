@@ -1,35 +1,41 @@
 module.exports = {
 
-    addNew : function(name, path, subRequire = true) {
+    addNew : function(name, inc, path) {
         var parser = require("ass-parser");
 
         var fs = require('fs');
         fs.readdir(path, function(err, items) {
             var eps = [];
+
             if(!items){
-                if(err)
-                    console.log(err);
-                else
-                    console.log('[ERROR] No suitable items in ' + path);
+                if(err) console.log(err);
                 return;
             }
 
+            checkDirsSync(name);
+
+            let epCounter = 1;
             for (var i=0; i<items.length; i++) {
-                var data = fs.readFileSync(path + items[i]);
-                var cont = parser(data);
-                var phrases = getPhrases(cont);
-                var ep = {};
-                ep.phrases = phrases;
-                ep.anim = name;
-                ep.sub = subRequire;
-                ep.num = i + 1;
-                eps.push(ep);
+                console.log(items[i] + '-' + pathlib.extname(items[i]));
+                if(pathlib.extname(items[i]) === '.ass') {
+                    var sub = items[i];
+                    var vid = items[i].replace('.ass', '.mp4');
+                    var data = fs.readFileSync(path + sub);
+                    var ep = {};
+                    ep.phrases = getPhrases(parser(data), inc);
+                    ep.anim = name;
+                    ep.num = epCounter;
+                    eps.push(ep);
+
+                    fs.renameSync(path + sub, settings.subtitles + name + '/' + items[i]);
+                    fs.renameSync(path + vid, settings.media.episodes + name + '/' + vid);
+                    epCounter++;
+                }
             }
-            console.log("Retrieved " + eps.length + " episodes");
+            console.log("Found " + eps.length + " episodes");
 
             if(eps.length == 0){
-                console.log("[ERR!]: Found 0 episodes");
-                
+                console.log("[ERROR]: Found 0 episodes");
             } else pushToDB(eps);
         });
     },
@@ -38,8 +44,9 @@ module.exports = {
 }
 
 const settings = require('../settings/general.json');
+const pathlib = require('path');
 
-function getPhrases(data) {
+function getPhrases(data, include) {
         var lodash = require('lodash');
         var ret = [];
         for (var j=0; j<data.length; j++) {
@@ -49,8 +56,11 @@ function getPhrases(data) {
                 var filter = lodash.filter(sc['body'], { 'key': 'Dialogue' } );
                 for (var i=0; i<filter.length; i++) {
                     var val = filter[i]['value'];
-                    if(val.Style == 'Default')
+                    if(!include || val.Style == include){
+                        let regex = new RegExp('\\\\N', 'ig');
+                        val.Text = val.Text.replace(regex, '');
                         ret.push(val);
+                    }
                 }
             }
         }
@@ -67,4 +77,10 @@ function pushToDB(episodes) {
             console.log("Inserted " + episodes[0].anim + " to DB");
         });
     });
+}
+
+function checkDirsSync(name) {
+    mkdirp = require('mkdirp');
+    mkdirp.sync(settings.media.episodes + name);
+    mkdirp.sync(settings.subtitles + name);
 }

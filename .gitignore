@@ -1,6 +1,7 @@
 node_modules/
 subs/
-out.txt
+work/
 vids/
 temp.png
 temp2.png
+settings/general.json
