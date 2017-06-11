@@ -59,6 +59,8 @@ function getPhrases(data, include) {
                     if(!include || val.Style == include){
                         let regex = new RegExp('\\\\N', 'ig');
                         val.Text = val.Text.replace(regex, ' ');
+                        regex = new RegExp('{[^}]+}', 'ig');
+                        val.Text = val.Text.replace(regex, ' ');
                         ret.push(val);
                     }
                 }
