@@ -78,6 +78,9 @@ function modifyText(txt, params) {
         let men = params.mention.split('#')[0].replace('@', '');
         return txt.replace(match, men + match[match.length - 1]);
     }
+
+    let regex = new RegExp('\\\\N|{[^}]+}', 'ig');
+    txt = txt.replace(regex, ' ');
     return txt;
 }
 

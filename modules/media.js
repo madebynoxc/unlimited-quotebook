@@ -72,56 +72,68 @@ function getAverageTime(time1, time2) {
 
 function printText(text, file, callback) {
     Jimp.read(media.temp + file, function (err, image) {
-        if(text.length > 20) {
-            var words = text.split(' ');
-            var tx1 = '', tx2 = '';
-            var half = Math.floor(words.length/2);
-            for(var i=0; i<half; i++) {
-                tx1 += words[i] + ' ';
-            }
-            for(var i=half; i<words.length; i++) {
-                tx2 += words[i] + ' ';
-            }
-            writeTwoLines(tx1, tx2, image, (f) => {
-                console.log('Media: Text added, sent back');
-                removeTempImage(f);
-                callback(media.temp + f);
-            });
-        } else {
-            writeSingleLine(text, image, (f) => {
-                console.log('Media: Text added, sent back');
-                removeTempImage(f);
-                callback(media.temp + f);
-            });
+        let words = text.split(' ');
+        let wordsInLine = Math.floor(words.length/Math.fround(text.length / 27));
+        let promises = [], lines = [], ln = 0;
+        lines[ln] = '';
+
+        for (var i = 0; i < words.length; i++) { 
+            if(i != 0 && i % wordsInLine == 0) {
+                ln++;
+                lines[ln] = '';
+            } 
+            lines[ln] += words[i] + ' ';
         }
+        
+        Jimp.loadFont(media.font, function (err, font) {
+            console.log(lines.length);
+            switch(lines.length) {
+                case 0:
+                    console.log('Media: Parsing text error');
+                case 1:
+                    image.print(font, getTextXMargin(lines[0]), 280, lines[0], () => {
+                            writeImage(image, (f) => callback(f));
+                        });
+                    break;
+                case 2:
+                    image.print(font, getTextXMargin(lines[0]), 10, lines[0])
+                        .print(font, getTextXMargin(lines[1]), 280, lines[1], () => {
+                            writeImage(image, (f) => callback(f));
+                        });
+                    break;
+                case 3:
+                    image.print(font, getTextXMargin(lines[0]), 10, lines[0])
+                        .print(font, getTextXMargin(lines[1]), 240, lines[1])
+                        .print(font, getTextXMargin(lines[2]), 280, lines[2], () => {
+                            writeImage(image, (f) => callback(f));
+                        });
+                    break;
+                default:
+                    image.print(font, getTextXMargin(lines[0]), 10, lines[0])
+                        .print(font, getTextXMargin(lines[1]), 50, lines[1])
+                        .print(font, getTextXMargin(lines[2]), 240, lines[2])
+                        .print(font, getTextXMargin(lines[3]), 280, lines[3], () => {
+                            writeImage(image, (f) => callback(f));
+                        });
+                    break;
+            }
+        });
+
         console.log('Media: Started text print...');
     });
 }
 
-function writeSingleLine(text, image, callback) {
-    Jimp.loadFont(media.font, function (err, font) {
-        let distX = getTextXMargin(text);
-        image.print(font, distX, 280, text, function(err, image){
-            let filename = guid.raw() + '.png';
-            image.write(media.temp + filename, () =>{
-                if(callback) callback(filename);
-            });
-        });
-    });
+function renderTextLine(text, image, font, offsetY) {
+    let distX = getTextXMargin(text);
+    return image.print(font, distX, offsetY, text);
 }
 
-function writeTwoLines(text1, text2, image, callback) {
-    Jimp.loadFont(media.font, function (err, font) {
-        let distX1 = getTextXMargin(text1);
-        let distX2 = getTextXMargin(text2);
-        image.print(font, distX1, 10, text1, function(err, image){
-            image.print(font, distX2, 280, text2, function(err, image){
-                let filename = guid.raw() + '.png';
-                image.write(media.temp + filename, () => {
-                    if(callback) callback(filename);
-                });
-            });
-        });
+function writeImage(image, callback) {
+    let filename = guid.raw() + '.png';
+    image.write(media.temp + filename, () => {
+        console.log('Media: Text added, sent back');
+        removeTempImage(filename);
+        callback(media.temp + filename);
     });
 }
 
