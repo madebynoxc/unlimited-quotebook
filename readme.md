@@ -35,6 +35,7 @@ It is preferable to make a keyword with character name and coma after it, so it 
 qb> ayano, -men John
 ```
 ![](https://cdn.discordapp.com/attachments/319532159201181696/323539885019627550/f9f11e3d-1874-7121-65f7-de02c3fbd393.png)
+
 You can also use discord mentions, bot will format them
 ```
 qb> kyoko, -men @Very Long Name#4242
@@ -42,14 +43,13 @@ qb> kyoko, -men @Very Long Name#4242
 ![](https://cdn.discordapp.com/attachments/319532159201181696/323536538656964610/a725b797-25fe-e844-f875-2c37513ab729.png)
 ### `-ctxt <text>` Replace text with custom
 In case if you want to extract just a frame and write a custom text, use `-ctxt` parameter.
-To remove text completely, use underscore (_) as parameter.
+To remove text completely, use underscore ( _ ) as parameter.
 ```
 qb> offer shinobu -ctxt Hey, wanna some fresh quotes?
 ```
 ![](https://cdn.discordapp.com/attachments/319532159201181696/323265452346179584/5b04c743-6372-538c-707b-5c6775be8854.png)
 ### `-msg <text>` Write a message along with image
-In case if you want to extract just a frame and write a custom text, use `-ctxt`
-To remove text completely, use underscore ( _ ) as parameter.
+Adds message to image. You can also mention other users
 ```
 qb> ^hello?$ -msg When someone ignores you
 ```
