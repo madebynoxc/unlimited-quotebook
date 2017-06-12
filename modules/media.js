@@ -46,7 +46,7 @@ function removeTempImage(n) {
     }
 
     setTimeout(() => {fs.unlink(media.temp + n, (err) => {
-        if(err) console.log(err);
+        if(err) console.log('[Media:ERROR] Clear temp: ' + err);
     })}, media.temptimeout);
 }
 
@@ -86,7 +86,6 @@ function printText(text, file, callback) {
         }
         
         Jimp.loadFont(media.font, function (err, font) {
-            console.log(lines.length);
             switch(lines.length) {
                 case 0:
                     console.log('Media: Parsing text error');

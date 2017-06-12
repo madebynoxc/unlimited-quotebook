@@ -16,7 +16,7 @@ module.exports = {
 
             let epCounter = 1;
             for (var i=0; i<items.length; i++) {
-                console.log(items[i] + '-' + pathlib.extname(items[i]));
+                console.log('File: ' +items[i] + ' format: ' + pathlib.extname(items[i]));
                 if(pathlib.extname(items[i]) === '.ass') {
                     var sub = items[i];
                     var vid = items[i].replace('.ass', '.mp4');
