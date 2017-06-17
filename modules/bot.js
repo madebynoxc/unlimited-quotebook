@@ -7,6 +7,7 @@ var bot, core, queue = 0;
 const settings = require('../settings/general.json');
 const utils = require('./localutils.js');
 const media = require('./media.js');
+const aces = require('./aces.js');
 const defaultArgs = require('../settings/default_args.json');
 
 module.exports = {
@@ -19,7 +20,7 @@ function _init(c) {
 
     bot.on("ready", () => {
         console.log("Bot:DiscordJS: Connected!");
-        bot.user.setGame("qb> .help");
+        bot.user.setGame(settings.botgame);
         console.log("Bot:DiscordJS: Ready!");
     });
 
@@ -70,7 +71,8 @@ function log(message) {
 
 function getCommand(m, callback) {
     if(m.content.startsWith('qb> ')) {
-        let sb = m.content.substring(4);
+        let cnt = m.content.substring(4).split(' ');
+        let sb = cnt.shift();
         switch(sb) {
             case '.help': 
                 callback(showHelp(m));
@@ -99,6 +101,18 @@ function getCommand(m, callback) {
                 if(isAdmin(m.author.id)) {
                     callback("Shutting down now. I said with a posed look");
                     setTimeout(() => { _stop(); }, 2000); 
+                }
+                return;
+            case '.aces':
+                let subargs = cnt.join(' ');
+                if(subargs) {
+                    m.channel.startTyping();
+                    aces.startRequest(subargs, (resp, img) => { 
+                        callback(resp, {file: img }, false);
+                        m.channel.stopTyping(true);
+                    });
+                } else {
+                    callback("**Match pattern:** 'first line' 'second line' <image link>");
                 }
                 return;
             default:
@@ -141,6 +155,11 @@ function showHelp(message) {
         {
 			name: "qb> .list",
 			value: "Shows the list of hosted episodes",
+			inline: false
+		}, {
+			name: "qb> .aces",
+			value: "AcesToAces in < 3 minutes \n "
+            + "'first line' 'second line' <image link>",
 			inline: false
 		}, {
 			name:"Parameters (-param)",

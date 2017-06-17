@@ -1,7 +1,9 @@
 module.exports = {
     getFrame,
     printText,
-    clearTemp
+    clearTemp,
+    removeTempImage,
+    writeImage
 }
 
 const ffmpeg = require("fluent-ffmpeg");

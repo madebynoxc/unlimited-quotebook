@@ -7,6 +7,7 @@
     "workfolder": "./work/",
     "botcolor": "45e8a4",
     "botperm": "125952",
+    "botgame": "qb> .help",
     "maxreq": 10,
 
     "media": {
