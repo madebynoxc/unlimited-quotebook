@@ -151,7 +151,11 @@ function showHelp(message) {
             + "-msg <text> | puts custom message to image \n"
             + "-rmsg | removes your message with command, default false",
 			inline: false
-        }
+        }, {
+			name: "For more detailed information",
+			value: "https://github.com/NoxCaos/unlimited-quotebook",
+			inline: false
+		}
         ]
     }
     message.author.send("", { embed });
