@@ -3,7 +3,6 @@ module.exports = {
 }
 
 const mkdirp = require('mkdirp');
-const date = new Date();
 const fs = require('fs');
 const util = require('util');
 const settings = require('../settings/general.json');
@@ -34,6 +33,7 @@ function error(str) {
 }
 
 function getDateTime() {
+    var date = new Date();
 
     var hour = date.getHours();
     hour = (hour < 10 ? "0" : "") + hour;
@@ -52,6 +52,6 @@ function getDateTime() {
     var day  = date.getDate();
     day = (day < 10 ? "0" : "") + day;
 
-    return "[" + year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec + "]: ";
+    return "[" + year + "." + month + "." + day + "|" + hour + ":" + min + ":" + sec + "]: ";
 
 }
