@@ -118,7 +118,7 @@ function getCommand(m, callback) {
                 return;
             default:
                 m.channel.startTyping();
-                processRequest(sb, (res, obj, r) => {
+                processRequest(sb + ' ' + cnt.join(' '), (res, obj, r) => {
                     if(r) m.delete();
 
                     callback(res, obj);
@@ -236,6 +236,7 @@ function processRequest(command, callback) {
 function setArgs(comm) {
     let regex = new RegExp(' -[^ ;]+', 'ig');
     let args = extend({}, defaultArgs);
+    console.log('Arg start: ' + comm);
     while ((a = regex.exec(comm)) !== null) {
         let par = comm.slice(regex.lastIndex).split(' -')[0].trim();
         console.log('Bot:Arg: ' + a + ' = ' + par);
