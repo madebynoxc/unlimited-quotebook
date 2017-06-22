@@ -4,13 +4,17 @@ module.exports = {
 
 const mkdirp = require('mkdirp');
 const date = new Date();
+const fs = require('fs');
+const util = require('util');
 const settings = require('../settings/general.json');
+
+var log_file, log_err;
 
 mkdirp(settings.logpath, function (err) {
     if (err) console.error("[Logger:ERROR] " + err);
     else {
-        var log_file = fs.createWriteStream(settings.logpath + 'message.log', {flags : 'w'});
-        var log_err = fs.createWriteStream(settings.logpath + 'error.log', {flags : 'w'});
+        log_file = fs.createWriteStream(settings.logpath + 'message.log', {flags : 'w'});
+        log_err = fs.createWriteStream(settings.logpath + 'error.log', {flags : 'w'});
         console.log("[Logger] Successful init for logging into files in " + settings.logpath);
     }
 });
