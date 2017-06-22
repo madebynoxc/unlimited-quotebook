@@ -9,6 +9,7 @@
     "botperm": "125952",
     "botgame": "qb> .help",
     "maxreq": 10,
+    "logpath": "/var/log/ulimited-quotebook/",
 
     "media": {
         "episodes": "./vids/",

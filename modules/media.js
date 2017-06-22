@@ -34,8 +34,8 @@ function getFrame(phrase, ep, callback) {
                 });
                 console.log(media.temp + name);
         } catch (e) {
-            console.log('[ERROR:Media]' + e.code);
-            console.log('[ERROR:Media]' + e.msg);
+            logger.error('[Media]' + e.code);
+            logger.error('[Media]' + e.msg);
         }
     });
 }
@@ -44,25 +44,25 @@ function removeTempImage(n) {
     if(media.temptimeout < 0) return;
     if(media.temptimeout < 5){
         media.temptimeout = 5;
-        console.log('[Media:WARN] The minimal temp autoclear timeout is 5sec');
+        logger.message('[Media:WARN] The minimal temp autoclear timeout is 5sec');
     }
 
     setTimeout(() => {fs.unlink(media.temp + n, (err) => {
-        if(err) console.log('[Media:ERROR] Clear temp: ' + err);
+        if(err) logger.error('[Media] Clear temp: ' + err);
     })}, media.temptimeout);
 }
 
 function clearTemp(callback) {
     fs.readdir(media.temp, (err, files) => {
         if(err) {
-            console.log('[Media:ERROR] Clear temp: ' + err);
+            logger.error('[Media] Clear temp: ' + err);
         } else {
             for (var i = 0; i < files.length; i++) {
                 fs.unlink(media.temp + files[i], (err) => {
-                    if(err) console.log(err);
+                    if(err) logger.error("[Media] " + err);
                 });
             }
-            console.log("Removed " + files.length + " items");
+            logger.message("Removed " + files.length + " items");
             if(callback) callback(files.length);
         }
     });
@@ -90,7 +90,7 @@ function printText(text, file, callback) {
         Jimp.loadFont(media.font, function (err, font) {
             switch(lines.length) {
                 case 0:
-                    console.log('Media: Parsing text error');
+                    logger.error('[Media] Parsing text error: ' + text);
                 case 1:
                     image.print(font, getTextXMargin(lines[0]), 280, lines[0], () => {
                             writeImage(image, (f) => callback(f));

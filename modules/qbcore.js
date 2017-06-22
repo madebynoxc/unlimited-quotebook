@@ -6,9 +6,10 @@ module.exports = {
 var _ = require("lodash");
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-
+var logger = require('./log.js');
 var media = require('./media.js');
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 var utils = require('./localutils.js');
 
 var mongodb, settings;
@@ -26,12 +27,16 @@ function connect(sett, callback) {
             assert.equal(null, err);
             mongodb = db;
             isConnected = true;
-            console.log("Core: Connected correctly to database");   
+            logger.message("Core: Connected correctly to database");   
             if(callback) callback();   
 
-            if (!fs.existsSync(settings.media.temp)){
-                fs.mkdirSync(settings.media.temp);
-            }
+            mkdirp(settings.media.temp, function (err) {
+                if(err) {
+                    console.log("[Core:ERROR] Can't create a temp folder " + settings.media.temp);
+                } else {
+                    logger.message("Core: Init temp folder success");  
+                }
+            });
     });
 }
 
@@ -57,10 +62,11 @@ function startRequest(keywords, params, callback) {
                 
                 media.printText(modifyText(p.Text, params), file, (result) => {
                     callback(params.message? params.message : '', result);
+                    console.log('Processing done for ' + keywords);
                 });
             });
         } else {
-            console.log('Core: {' + keywords + "} \n Nothing found");
+            logger.message('Core: {' + keywords + "} \n Nothing found");
             callback("Nothing found ._.");
         }
     });
@@ -94,7 +100,7 @@ function getPhraseList(episode, match) {
             res.push(ph[i]);
         }
     }
-    console.log('Core: Found phrases ' + res.length);
+    logger.message('Core: Found phrases ' + res.length);
     return res;
 }
 

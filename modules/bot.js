@@ -8,6 +8,7 @@ const settings = require('../settings/general.json');
 const utils = require('./localutils.js');
 const media = require('./media.js');
 const aces = require('./aces.js');
+const logger = require('./log.js');
 const defaultArgs = require('../settings/default_args.json');
 
 module.exports = {
@@ -55,18 +56,18 @@ function _init(c) {
 }
 
 function _stop() {
-    console.log("Bot: Shutting down...");
+    logger.message("Bot: Shutting down...");
     return bot.destroy();
 }
 
 function log(message) {
-    var response = '';
+    var msg = '';
     try {
-		response = message.guild.name + " : " + message.channel.name + " : " + message.author.username + " : " + message.content;
+		msg = message.guild.name + " : " + message.channel.name + " : " + message.author.username + " : " + message.content;
 	} catch(e) {
-		response = "PW : " + message.author.username + " : " + message.content;
+		msg = "PW : " + message.author.username + " : " + message.content;
 	}
-    console.log(response);
+    logger.message(msg);
 }
 
 function getCommand(m, callback) {
