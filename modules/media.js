@@ -12,6 +12,7 @@ const settings = require('../settings/general.json');
 const media = settings.media;
 const Jimp = require('jimp');
 const guid = require('guid');
+var logger = require('./log.js');
 var fs = require('fs');
 
 function getFrame(phrase, ep, callback) {
